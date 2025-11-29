@@ -1,10 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "sqlite"
   url      = "file:./dev.db"
 }
 
-generator client {
-  provider = "prisma-client-js"
+model User {
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  password  String
+  role      String     @default("USER")
+  createdAt DateTime   @default(now())
+
+  services  Service[]
+  messages  Message[]
 }
 
-// ... copie-colle tous tes modèles User, Service, Message
+model Service {
+  id        Int      @id @default(autoincrement())
+  name      String
+  status    String   @default("DISPONIBLE")
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
